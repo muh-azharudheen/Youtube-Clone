@@ -8,7 +8,22 @@
 
 import UIKit
 
-class VideoCell: UICollectionViewCell{
+class BaseCell:  UICollectionViewCell{
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupViews()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setupViews(){
+        
+    }
+}
+
+class VideoCell: BaseCell{
     
     let thumbnailImageView: UIImageView = {
         let iv = UIImageView()
@@ -48,12 +63,9 @@ class VideoCell: UICollectionViewCell{
         return tv
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupViews()
-    }
     
-    func setupViews(){
+    
+    override func setupViews(){
         
         addSubview(thumbnailImageView)
         addSubview(seperatorView)
@@ -87,9 +99,5 @@ class VideoCell: UICollectionViewCell{
         //bottom constraints
         addConstraint(NSLayoutConstraint(item: subtitleTextView, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 0, constant: 30))
         
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
