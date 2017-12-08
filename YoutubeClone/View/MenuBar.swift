@@ -30,7 +30,7 @@ class MenuBar : UIView{
         
         
         let selectedIndexPath = IndexPath(item: 0, section: 0)
-        collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: [])
+        collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: [])   
         
         addSubview(collectionView)
         addConstraintWithFormat(format: "H:|[v0]|", views: collectionView)
