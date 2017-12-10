@@ -45,30 +45,34 @@ class VideoCell: BaseCell{
             
             
             if let thumbnailImage =  video?.thumbnailImageName {
-                thumbnailImageView.image = UIImage(named: thumbnailImage)
+                thumbnailImageView.loadImageUsingUrlString(urlString: thumbnailImage)
             }
             if let channelName = video?.channel?.name , let numberofViews = video?.numberOfViews{
                 let numberFormatter = NumberFormatter()
                 numberFormatter.numberStyle = .decimal
                 subtitleTextView.text = "\(channelName) • \(String(describing: numberFormatter.string(from: numberofViews)!))"
             }
-            userProfileImageView.image = UIImage(named: (video?.channel?.profileImageName)!)
+            if let userProfileView = video?.channel?.profileImageName {
+                userProfileImageView.loadImageUsingUrlString(urlString: userProfileView)
+                
+            }
             
             
         }
     }
     
-    let thumbnailImageView: UIImageView = {
-        let iv = UIImageView()
+    let thumbnailImageView: customImageView = {
+        let iv = customImageView()
         iv.image = #imageLiteral(resourceName: "taylor_swift_blank_space")
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
         return iv
     }()
     
-    let userProfileImageView: UIImageView = {
-        let iv = UIImageView()
+    let userProfileImageView: customImageView = {
+        let iv = customImageView()
         iv.image = #imageLiteral(resourceName: "taylor_swift_profile")
+        iv.contentMode = .scaleAspectFill
         iv.layer.cornerRadius = 22
         iv.layer.masksToBounds = true
         return iv

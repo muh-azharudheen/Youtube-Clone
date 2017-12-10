@@ -10,38 +10,61 @@ import UIKit
 
 class HomeController: UICollectionViewController , UICollectionViewDelegateFlowLayout{
     
-    var videos : [Video] = {
-        
-        let kanyeChannel = Channel()
-        kanyeChannel.name = "KanyeIsTheBestChannel"
-        kanyeChannel.profileImageName = "kanye_profile"
-        
-        let blankSpaceVideo = Video()
-        blankSpaceVideo.title = "Taylor Swift - Blank Space"
-        blankSpaceVideo.thumbnailImageName = "taylor_swift_blank_space"
-        blankSpaceVideo.numberOfViews = 12345678787
-        blankSpaceVideo.date = Date()
-        blankSpaceVideo.channel = kanyeChannel
-        
-        let badBloodVideo = Video()
-        badBloodVideo.title = "Taylor Swift - Bad Blood featuring Kendrick Lamar"
-        badBloodVideo.thumbnailImageName = "taylor_swift_bad_blood"
-        badBloodVideo.channel = kanyeChannel
-        
-        
-        return [blankSpaceVideo , badBloodVideo]
-    }()
+    var videos : [Video]?
     
     let menuBar : MenuBar = {
         let mb = MenuBar()
         return mb
     }()
     
+    func fetchVideos(){
+        let url = URL(string: "https://s3-us-west-2.amazonaws.com/youtubeassets/home.json")
+        URLSession.shared.dataTask(with: url!) { (data, response, error) in
+            
+            guard let data = data else { return }
+            
+            if error != nil {
+                print(error)
+                return
+            }
+            
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [[String:AnyObject]] {
+                    self.videos = [Video]()
+                    for dictionary in json {
+                        let video = Video()
+                        video.title = dictionary["title"] as? String
+                        video.thumbnailImageName = dictionary["thumbnail_image_name"] as? String
+                        let channel = Channel()
+                        let channelDictionry = dictionary["channel"] as! [String: AnyObject]
+                        channel.name = channelDictionry["name"] as? String
+                        channel.profileImageName = channelDictionry["profile_image_name"] as? String
+                        video.channel = channel
+                        self.videos?.append(video)
+                    }
+                }
+                
+
+                    DispatchQueue.main.async {
+                        self.collectionView?.reloadData()
+                    }
+                
+                
+            } catch let JsonError {
+                print(JsonError)
+            }
+            
+            
+            
+        }.resume()
+    }
     
     fileprivate let cellId = "cellId"
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        fetchVideos()
         
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width - 32, height: view.frame.height))
         titleLabel.text = "Home"
@@ -69,24 +92,30 @@ class HomeController: UICollectionViewController , UICollectionViewDelegateFlowL
     
     private func setupNavBarButtons(){
         let searchBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "search_icon").withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(handleSearch))
-        let moreButton = UIBarButtonItem(image: #imageLiteral(resourceName: "nav_more_icon").withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(handleMore))
+        let moreButton = UIBarButtonItem(image: #imageLiteral(resourceName: "nav_more_icon").withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(HomeController.handleSearch(_:)))
         navigationItem.rightBarButtonItems = [searchBarButtonItem, moreButton]
     }
     
-    @objc private func handleSearch(){
-        
+    let settingsLauncher = SettingsLauncher()
+    
+    @objc private func handleSearch(_ sender: UIBarButtonItem){
+        settingsLauncher.showSettingLauncher()
     }
     
     @objc private func handleMore(){
         
     }
+    
+   
+    
+    
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return videos.count
+        return videos?.count ?? 0
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! VideoCell
-        cell.video = videos[indexPath.item]
+        cell.video = videos?[indexPath.item]
         return cell
     }
 

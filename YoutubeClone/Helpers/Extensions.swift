@@ -16,12 +16,49 @@ extension UIColor{
 
 
 extension UIView{
-    func addConstraintWithFormat(format: String, views: UIView...){
+    func addConstraintWithFormat(format: String,options:NSLayoutFormatOptions = NSLayoutFormatOptions(), views: UIView...){
         var dictionary = [String: UIView]()
         for (index, view) in views.enumerated(){
             dictionary["v\(index)"] = view
             view.translatesAutoresizingMaskIntoConstraints = false
         }
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: format, options: NSLayoutFormatOptions(), metrics: nil, views: dictionary))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: format, options: options, metrics: nil, views: dictionary))
+    }
+}
+
+
+let imageCache =  NSCache<NSString,UIImage>()
+
+class customImageView:UIImageView{
+    
+    var imageUrlString: String?
+    
+    func loadImageUsingUrlString(urlString: String){
+        
+        imageUrlString = urlString
+        
+        image = nil
+        
+        if let imageFromCache = imageCache.object(forKey: urlString as NSString){
+            self.image = imageFromCache
+        }
+        
+        let url = URL(string: urlString)
+        URLSession.shared.dataTask(with: url!) { (data, response, error) in
+            guard let data = data else { return }
+            if error != nil{
+                print(error)
+                return
+            }
+            DispatchQueue.main.async {
+                if let imageToCache = UIImage(data: data) {
+                    
+                    if self.imageUrlString == urlString{
+                        self.image = imageToCache
+                    }
+                    imageCache.setObject(imageToCache, forKey: urlString as NSString)
+                }
+            }
+        }.resume()
     }
 }
