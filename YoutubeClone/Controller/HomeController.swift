@@ -43,11 +43,9 @@ class HomeController: UICollectionViewController , UICollectionViewDelegateFlowL
                         self.videos?.append(video)
                     }
                 }
-                
-
-                    DispatchQueue.main.async {
-                        self.collectionView?.reloadData()
-                    }
+                DispatchQueue.main.async {
+                    self.collectionView?.reloadData()
+                }
                 
                 
             } catch let JsonError {
@@ -56,11 +54,11 @@ class HomeController: UICollectionViewController , UICollectionViewDelegateFlowL
             
             
             
-        }.resume()
+            }.resume()
     }
     
     fileprivate let cellId = "cellId"
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -83,7 +81,7 @@ class HomeController: UICollectionViewController , UICollectionViewDelegateFlowL
         setupNavBarButtons()
         
     }
-
+    
     private func setupMenubar(){
         self.view.addSubview(menuBar)
         view.addConstraintWithFormat(format: "H:|[v0]|", views: menuBar)
@@ -96,7 +94,11 @@ class HomeController: UICollectionViewController , UICollectionViewDelegateFlowL
         navigationItem.rightBarButtonItems = [searchBarButtonItem, moreButton]
     }
     
-    let settingsLauncher = SettingsLauncher()
+    lazy var settingsLauncher: SettingsLauncher = {
+        let launcher = SettingsLauncher()
+        launcher.homeController = self
+        return launcher
+    }()
     
     @objc private func handleSearch(_ sender: UIBarButtonItem){
         settingsLauncher.showSettingLauncher()
@@ -106,7 +108,14 @@ class HomeController: UICollectionViewController , UICollectionViewDelegateFlowL
         
     }
     
-   
+    func showControllerForSetting(setting: Setting){
+        let vc = UIViewController()
+        vc.view.backgroundColor = UIColor.white
+        vc.navigationItem.title = setting.name.rawValue
+        navigationController?.navigationBar.tintColor = UIColor.white
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor : UIColor.white]
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
     
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -118,7 +127,7 @@ class HomeController: UICollectionViewController , UICollectionViewDelegateFlowL
         cell.video = videos?[indexPath.item]
         return cell
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let imageHeight = (view.frame.width - 32) * 9/16
         let balanceHeight:CGFloat = 85 + 16
@@ -130,13 +139,6 @@ class HomeController: UICollectionViewController , UICollectionViewDelegateFlowL
         return 0
     }
 }
-
-
-
-
-
-
-
 
 
 

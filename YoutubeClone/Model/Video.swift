@@ -17,7 +17,12 @@ class Video{
 }
 
 
+
 class Channel{
     var name: String?
     var profileImageName: String?
 }
+
+
+
+

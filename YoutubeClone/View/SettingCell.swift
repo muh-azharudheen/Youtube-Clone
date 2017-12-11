@@ -12,15 +12,29 @@ class SettingCell: BaseCell{
     
     var setting: Setting?{
         didSet{
-            nameLabel.text = setting?.name
+            nameLabel.text = setting?.name.rawValue
             if let imageName = setting?.imageName {
-                iconImageView.image = UIImage(named: imageName)
-                
+                iconImageView.image = UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate)
+                iconImageView.tintColor = UIColor.darkGray
             }
-            
         }
     }
     
+    override var isHighlighted: Bool{
+        didSet{
+            backgroundColor = isHighlighted ? UIColor.darkGray : UIColor.white
+            nameLabel.textColor = isHighlighted  ? UIColor.white : UIColor.black
+            iconImageView.tintColor = isHighlighted  ? UIColor.white : UIColor.darkGray
+        }
+    }
+    
+    override var isSelected: Bool{
+        didSet{
+            backgroundColor = isSelected ? UIColor.darkGray : UIColor.white
+            nameLabel.textColor = isSelected ? UIColor.white : UIColor.black
+            iconImageView.tintColor = isSelected ? UIColor.white : UIColor.darkGray
+        }
+    }
     
     let nameLabel : UILabel = {
         let label = UILabel()
