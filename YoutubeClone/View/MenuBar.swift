@@ -11,7 +11,11 @@ class MenuBar : UIView{
     
     fileprivate let cellId = "cellId"
     
+    var horizontalBarLeftAnchorConstraint:NSLayoutConstraint?
+    
     let images =  [#imageLiteral(resourceName: "home"), #imageLiteral(resourceName: "trending"), #imageLiteral(resourceName: "subscriptions") , #imageLiteral(resourceName: "account")]
+    
+    weak var homeController: HomeController?
     
     lazy var collectionView : UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -25,16 +29,31 @@ class MenuBar : UIView{
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        addSubview(collectionView)
+        setupHorizontalBar()
         collectionView.register(MenuCell.self, forCellWithReuseIdentifier: cellId)
-        
-        
+    
         let selectedIndexPath = IndexPath(item: 0, section: 0)
         collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: [])   
         
-        addSubview(collectionView)
+        
         addConstraintWithFormat(format: "H:|[v0]|", views: collectionView)
         addConstraintWithFormat(format: "V:|[v0]|", views: collectionView)
+        
+    }
+    
+    private func setupHorizontalBar(){
+        let horizontalBar = UIView()
+        horizontalBar.backgroundColor = UIColor.white
+        horizontalBar.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(horizontalBar)
+        
+        horizontalBarLeftAnchorConstraint = horizontalBar.leftAnchor.constraint(equalTo: self.leftAnchor)
+        horizontalBarLeftAnchorConstraint?.isActive = true
+        
+        horizontalBar.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+        horizontalBar.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1/4).isActive = true
+        horizontalBar.heightAnchor.constraint(equalToConstant: 4).isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -60,6 +79,10 @@ extension MenuBar: UICollectionViewDelegate, UICollectionViewDataSource , UIColl
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        homeController?.scorollToMenuIndex(menuIndex: indexPath.item)
     }
     
 }

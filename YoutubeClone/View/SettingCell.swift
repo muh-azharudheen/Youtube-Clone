@@ -52,7 +52,6 @@ class SettingCell: BaseCell{
     
     override func setupViews() {
         super.setupViews()
-        
         addSubview(nameLabel)
         addSubview(iconImageView)
         
