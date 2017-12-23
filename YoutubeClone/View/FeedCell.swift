@@ -10,9 +10,7 @@ import UIKit
 
 class FeedCell: BaseCell{
     
-   
-    
-    fileprivate var videos: [Video]?
+    var videos: [Video]?
     
     fileprivate let cellId = "cellId"
     
@@ -74,6 +72,11 @@ extension FeedCell: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let launcher = VideoLauncher()
+        launcher.showVideoPlayer()
     }
 }
 

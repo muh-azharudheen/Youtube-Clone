@@ -12,6 +12,9 @@ class HomeController: UICollectionViewController , UICollectionViewDelegateFlowL
     
     var videos : [Video]?
     
+    private let trendingCellId = "trendingCellId"
+    private let subscriptionCellId = "subscriptionCellId"
+    
     let titles = ["Home", "Trending", "Subscriptions", "Account"]
     
     lazy var menuBar : MenuBar = {
@@ -43,6 +46,8 @@ class HomeController: UICollectionViewController , UICollectionViewDelegateFlowL
         collectionView?.backgroundColor = UIColor.white
         navigationController?.navigationBar.isTranslucent = false
         collectionView?.register(FeedCell.self, forCellWithReuseIdentifier: cellId)
+        collectionView?.register(TrendingCell.self, forCellWithReuseIdentifier: trendingCellId)
+        collectionView?.register(SubscriptionCell.self, forCellWithReuseIdentifier: subscriptionCellId)
         collectionView?.contentInset = UIEdgeInsets(top: 50, left: 0, bottom: 0, right: 0)
         collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 50, left: 0, bottom: 0, right: 0)
         collectionView?.isPagingEnabled = true
@@ -110,7 +115,16 @@ class HomeController: UICollectionViewController , UICollectionViewDelegateFlowL
         return 4
     }
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) 	
+        let identifier: String
+        
+        if indexPath.item == 1{
+            identifier = trendingCellId
+        } else if indexPath.item == 2{
+            identifier = subscriptionCellId
+        } else {
+            identifier = cellId
+        }
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) 	
         return cell
     }
     
@@ -119,6 +133,13 @@ class HomeController: UICollectionViewController , UICollectionViewDelegateFlowL
     }
     
  
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         menuBar.horizontalBarLeftAnchorConstraint?.constant = scrollView.contentOffset.x / 4

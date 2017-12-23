@@ -12,8 +12,25 @@ class APIService {
     
     static let sharedInstance = APIService()
     
+    let baseURL = "https://s3-us-west-2.amazonaws.com/youtubeassets/"
+    
     func fetchVideos(completion: @escaping ([Video]) -> ()) {
-        let url = URL(string: "https://s3-us-west-2.amazonaws.com/youtubeassets/home.json")
+        fetchFeedForUrlString(urlString: "\(baseURL)home.json", completion: completion)
+    }
+    
+    
+    func fetchTrendingFeed(completion: @escaping ([Video]) -> ()) {
+        fetchFeedForUrlString(urlString: "\(baseURL)trending.json", completion: completion)
+    }
+    
+    
+    func fetchSubscriptionFeed(completion: @escaping ([Video]) -> ()) {
+        fetchFeedForUrlString(urlString: "\(baseURL)subscriptions.json", completion: completion)
+    }
+    
+    
+    func fetchFeedForUrlString(urlString: String,completion: @escaping ([Video]) -> ()) {
+        let url = URL(string: urlString)
         URLSession.shared.dataTask(with: url!) { (data, response, error) in
             
             guard let data = data else { return }
@@ -29,6 +46,7 @@ class APIService {
                         let video = Video()
                         video.title = dictionary["title"] as? String
                         video.thumbnailImageName = dictionary["thumbnail_image_name"] as? String
+                        video.numberOfViews = dictionary["number_of_views"] as? NSNumber
                         let channel = Channel()
                         let channelDictionry = dictionary["channel"] as! [String: AnyObject]
                         channel.name = channelDictionry["name"] as? String
